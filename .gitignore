@@ -1,0 +1,5 @@
+__pycache__
+.pyc
+database.db
+yolov8n.pt
+staticframe.jpg
