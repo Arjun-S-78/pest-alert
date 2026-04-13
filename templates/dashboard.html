@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-5xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+
+    <div class="bg-white rounded-2xl shadow p-4 mb-6">
+      <canvas id="chart"></canvas>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-4">
+      <div id="map" style="height:400px"></div>
+    </div>
+
+    <a href="/" class="inline-block mt-6 text-blue-600">← Back</a>
+  </div>
+
+<script>
+let data = {{ data | tojson }};
+let labels = data.map(x => x[0]);
+let values = data.map(x => x[1]);
+
+new Chart(document.getElementById("chart"), {
+  type: 'bar',
+  data: { labels: labels, datasets: [{ label: 'Pest Count', data: values }] }
+});
+
+// Map
+var map = L.map('map').setView([11.0, 78.0], 5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let coords = {{ coords | tojson }};
+coords.forEach(c => {
+  let lat = parseFloat(c[0]); let lon = parseFloat(c[1]);
+  if(!isNaN(lat) && !isNaN(lon)){
+    L.marker([lat, lon]).addTo(map).bindPopup("Pest detected");
+  }
+});
+</script>
+</body>
+</html>

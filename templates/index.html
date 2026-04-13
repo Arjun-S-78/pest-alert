@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pest Alert Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in { animation: fadeIn .6s ease-in; }
+    @keyframes fadeIn { from{opacity:0; transform: translateY(10px);} to{opacity:1; transform: translateY(0);} }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-5xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-4">🌱 Pest Alert Pro</h1>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h2 class="text-xl font-semibold mb-2">Upload Image</h2>
+        <form method="POST" enctype="multipart/form-data" class="flex gap-2">
+          <input type="file" name="image" required class="border p-2 rounded w-full">
+          <button class="bg-green-600 text-white px-4 rounded">Detect</button>
+        </form>
+
+        {% if pest %}
+        <div class="mt-4 p-4 rounded-xl bg-green-50 fade-in">
+          <div class="text-lg font-bold">Detected: {{ pest }}</div>
+          <div>Confidence: {{ conf }}</div>
+          <div class="mt-2"><b>Damage:</b> {{ info.damage }}</div>
+          <div><b>Solution:</b> {{ info.solution }}</div>
+          <img src="{{ img }}" class="mt-3 rounded w-48">
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h2 class="text-xl font-semibold mb-2">Live Camera</h2>
+        <img src="/video" class="rounded-xl border w-full">
+        <div id="alert" class="mt-3 text-red-600 font-semibold"></div>
+      </div>
+    </div>
+
+    <a href="/dashboard" class="inline-block mt-6 text-blue-600">Open Dashboard →</a>
+  </div>
+
+<script>
+async function poll(){
+  try{
+    const res = await fetch('/api/last');
+    const d = await res.json();
+    if(d.pest && d.pest !== "No Pest"){
+      document.getElementById('alert').innerText = "⚠ Pest detected: " + d.pest;
+    }
+  }catch(e){}
+}
+setInterval(poll, 3000);
+</script>
+
+</body>
+</html>
